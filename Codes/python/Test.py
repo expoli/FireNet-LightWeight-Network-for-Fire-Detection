@@ -157,6 +157,10 @@ def begain_compose(actual_labels, predicted_labels):
 
     return 0
 
+def dispaly_model_summary(model):
+    # 显示模型的结构
+    model.summary()
+    return 0
 
 def evaluate_model(X, Y, model):
     result = model.evaluate(X, Y)
@@ -172,6 +176,7 @@ if __name__ == '__main__':
     actual_labels = create_test_labels(shuffled_test_image_data, test_image_num=test_image_num)
     X, Y = create_dataset(test_image_data=shuffled_test_image_data, IMG_SIZE=64)
     model = load_tf_h5_model(model_path='my_model.h5')
+    dispaly_model_summary(model)
     predicted_labels = predicte_labels(X=X, model=model, test_image_num=test_image_num)
     begain_compose(actual_labels=actual_labels, predicted_labels=predicted_labels)
     print(evaluate_model(X, Y, model))
