@@ -62,18 +62,18 @@ while(1):
         print("Fire Probability: ", fire_prob)
         print("Predictions: ", model.predict(image))
         print(image.shape)
-        
+
         label = "Fire Probability: " + str(fire_prob)
-        cv2.putText(orig, label, (10, 25),  cv2.FONT_HERSHEY_SIMPLEX,0.7, (0, 255, 0), 2)
+        cv2.putText(orig, label, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
         cv2.namedWindow("Output")
         cv2.imshow("Output", orig)
-        
+
         key = cv2.waitKey(10)
-        if key == 27: # exit on ESC
+        if key == 27:  # exit on ESC
             break
-    elif rval==False:
-            break
+    elif rval == False:
+        break
 end = time.time()
 
 cap.release()
