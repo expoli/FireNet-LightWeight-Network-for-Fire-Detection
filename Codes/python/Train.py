@@ -16,7 +16,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # 使用GPU进行计算的GPU初始化代码；如果不使用则会出现cudNN无法使用的报错
 
-def gpu_init():
+def init_gpu():
     gpus = tf.config.experimental.list_physical_devices('GPU')
     if gpus:
         try:
@@ -28,6 +28,8 @@ def gpu_init():
         except RuntimeError as e:
             # Memory growth must be set before GPUs have been initialized
             print(e)
+
+    return 0
 
 
 def create_training_data(CATEGORIES=['Fire', 'NoFire'], DATADIR='Datasets/Training Dataset', IMG_SIZE=64):
@@ -144,7 +146,7 @@ def fit_and_save_model(X, Y, checkpoint_path="training_1/cp.ckpt"):
 
 
 def test_load_model_file(h5_model_file_dir):
-    model = tf.keras.models.load_model('../../my_model.h5')
+    model = tf.keras.models.load_model('my_model.h5')
     if model == None:
         print("Load h5 model file fail!")
     else:
@@ -154,7 +156,7 @@ def test_load_model_file(h5_model_file_dir):
 
 
 if __name__ == '__main__':
-    gpu_init()
+    init_gpu()
     training_data = create_training_data()
     shuffled_data = shuffle_data(training_data)
     X, Y = create_dataset(shuffled_data)
