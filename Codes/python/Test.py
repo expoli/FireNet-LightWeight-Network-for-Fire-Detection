@@ -134,7 +134,7 @@ def plot_confusion_matrix(cm, classes,
     return 0
 
 
-def begain_compose(actual_labels, predicted_labels):
+def begain_compute(actual_labels, predicted_labels):
     cm = confusion_matrix(actual_labels, predicted_labels)
     # test_batches.class_indices
     cm_plot_labels = ['Fire', 'No Fire']
@@ -178,5 +178,5 @@ if __name__ == '__main__':
     model = load_tf_h5_model(model_path='my_model.h5')
     dispaly_model_summary(model)
     predicted_labels = predicte_labels(X=X, model=model, test_image_num=test_image_num)
-    begain_compose(actual_labels=actual_labels, predicted_labels=predicted_labels)
+    begain_compute(actual_labels=actual_labels, predicted_labels=predicted_labels)
     print(evaluate_model(X, Y, model))
