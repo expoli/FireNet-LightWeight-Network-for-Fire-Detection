@@ -85,7 +85,7 @@ def create_dataset(test_image_data, IMG_SIZE=64):
 
 
 def load_tf_h5_model(model_path='my_model.h5'):
-    model = tf.keras.models.load_model('my_model.h5')
+    model = tf.keras.models.load_model(model_path)
     return model
 
 
