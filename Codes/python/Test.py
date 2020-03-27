@@ -85,7 +85,7 @@ def create_dataset(test_image_data, IMG_SIZE=64):
 
 
 def load_tf_h5_model(model_path='my_model.h5'):
-    model = tf.keras.models.load_model('my_model.h5')
+    model = tf.keras.models.load_model(model_path)
     return model
 
 
@@ -100,7 +100,7 @@ def predicte_labels(X, model, test_image_num):
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
-                          cmap=plt.cm.Blues):
+                          cmap='Blues'):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
@@ -130,32 +130,39 @@ def plot_confusion_matrix(cm, classes,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.tight_layout()
+    plt.show()
 
     return 0
 
 
-def begain_compose(actual_labels, predicted_labels):
+def begain_compute(actual_labels, predicted_labels):
     cm = confusion_matrix(actual_labels, predicted_labels)
     # test_batches.class_indices
     cm_plot_labels = ['Fire', 'No Fire']
     plot_confusion_matrix(cm, cm_plot_labels, title='Confusion Matrix')
 
+    # 真正
     tp = cm[0][0]
+    # 假负
     fn = cm[0][1]
+    # 假正
     fp = cm[1][0]
+    # 真负
     tn = cm[1][1]
+
     print("tp" + ' ' + str(tp))
     print("fn" + ' ' + str(fn))
     print("fp" + ' ' + str(fp))
     print("tn" + ' ' + str(tn))
-
+    # 召回率
     Recall = tp / (tp + fn)
+    # 准确率
     Precision = tp / (tp + fp)
     f_measure = 2 * ((Precision * Recall) / (Precision + Recall))
 
     print('Precision=', Precision, 'Recall=', Recall, 'f_measure=', f_measure)
 
-    return 0
+    return cm
 
 def dispaly_model_summary(model):
     # 显示模型的结构
@@ -178,5 +185,5 @@ if __name__ == '__main__':
     model = load_tf_h5_model(model_path='my_model.h5')
     dispaly_model_summary(model)
     predicted_labels = predicte_labels(X=X, model=model, test_image_num=test_image_num)
-    begain_compose(actual_labels=actual_labels, predicted_labels=predicted_labels)
+    begain_compute(actual_labels=actual_labels, predicted_labels=predicted_labels)
     print(evaluate_model(X, Y, model))

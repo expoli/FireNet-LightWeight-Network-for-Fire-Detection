@@ -6,6 +6,7 @@ import random
 import cv2
 import numpy as np
 import tensorflow as tf
+from matplotlib import pyplot as plt
 from tensorflow.keras.layers import Conv2D, AveragePooling2D
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 from tqdm import tqdm
@@ -118,9 +119,9 @@ def create_model(X, Y):
     return model
 
 
-def fit_and_save_model(X, Y, checkpoint_path="training_1/cp.ckpt"):
+def fit_and_save_model(X, Y, model, epochs=100,
+                       checkpoint_path="./result/hdf5_files/weights.{epoch:02d}-{val_loss:.2f}.hdf5"):
     # 创建一个基本的模型实例
-    model = create_model(X, Y)
 
     # 显示模型的结构
     model.summary()
@@ -128,30 +129,68 @@ def fit_and_save_model(X, Y, checkpoint_path="training_1/cp.ckpt"):
     checkpoint_dir = os.path.dirname(checkpoint_path)
 
     # 创建一个保存模型权重的回调
-    cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
-                                                     save_weights_only=True,
-                                                     verbose=1)
+    # EarlyStopping_callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss',
+    #                                  min_delta=0.2,
+    #                                  patience=0,
+    #                                  verbose=0,
+    #                                  mode='auto',
+    #                                  baseline=None,
+    #                                  restore_best_weights=True)
+
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir='./result/tensorboard_logs',
+                                                          histogram_freq=0,
+                                                          batch_size=32,
+                                                          write_graph=True,
+                                                          write_grads=False,
+                                                          write_images=False,
+                                                          embeddings_freq=0,
+                                                          embeddings_layer_names=None,
+                                                          embeddings_metadata=None,
+                                                          embeddings_data=None,
+                                                          update_freq='epoch')
+
+    cp_callback = tf.keras.callbacks.ModelCheckpoint(checkpoint_path,
+                                                     monitor='val_los',
+                                                     verbose=0,
+                                                     save_best_only=False,
+                                                     save_weights_only=False,
+                                                     mode='auto',
+                                                     period=1)
 
     history = model.fit(X,
                         Y,
                         batch_size=32,
-                        epochs=100,
+                        epochs=epochs,
                         validation_split=0.3,
-                        callbacks=[cp_callback])
+                        callbacks=[cp_callback, tensorboard_callback],
+                        )
 
     # 将整个模型保存为HDF5文件
     model.save('my_model.h5')
 
-    return 0
+    return history
 
 
-def test_load_model_file(h5_model_file_dir):
-    model = tf.keras.models.load_model('my_model.h5')
+def load_model_file(h5_model_file_dir='my_model.h5'):
+    model = tf.keras.models.load_model(h5_model_file_dir)
     if model == None:
         print("Load h5 model file fail!")
     else:
         print("Reload model file success!")
 
+    return model
+
+
+def plot_function(history):
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'validation'], loc='upper left')
+    plt.show()
+    # 'loss'
+    # 'accuracy'
     return 0
 
 
@@ -160,5 +199,8 @@ if __name__ == '__main__':
     training_data = create_training_data()
     shuffled_data = shuffle_data(training_data)
     X, Y = create_dataset(shuffled_data)
+    model = create_model(X, Y)
+    # model = load_model_file('my_model.h5')
+    history = fit_and_save_model(X, Y, model=model, epochs=1000)
 
-    fit_and_save_model(X, Y)
+    plot_function(history=history)
