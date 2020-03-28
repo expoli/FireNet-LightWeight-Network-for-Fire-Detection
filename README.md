@@ -11,3 +11,15 @@ It needs to be mentioned that the data used for training is only our custom crea
 
 The following is the link to our dataset used in the FireNet paper:
 - https://drive.google.com/drive/folders/1HznoBFEd6yjaLFlSmkUGARwCUzzG4whq?usp=sharing
+
+## The test result example
+
+![](result/images/Best-performance.png)
+
+```text
+tp 583
+fn 10
+fp 18
+tn 260
+Precision= 0.9700499168053245 Recall= 0.9831365935919055 f_measure= 0.9765494137353434
+```
