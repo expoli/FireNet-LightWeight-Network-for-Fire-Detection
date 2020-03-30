@@ -120,7 +120,8 @@ def create_model(X, Y):
 
 
 def fit_and_save_model(X, Y, model, epochs=100,
-                       checkpoint_path="./result/hdf5_files/weights.{epoch:02d}-{val_loss:.2f}.hdf5"):
+                       checkpoint_path="./result/hdf5_files/weights.{epoch:02d}-{val_loss:.2f}.hdf5",
+                       model_save_path=''):
     # 创建一个基本的模型实例
 
     # 显示模型的结构
@@ -166,7 +167,7 @@ def fit_and_save_model(X, Y, model, epochs=100,
                         )
 
     # 将整个模型保存为HDF5文件
-    model.save('my_model.h5')
+    model.save(model_save_path)
 
     return history
 
@@ -181,26 +182,28 @@ def load_model_file(h5_model_file_dir='my_model.h5'):
     return model
 
 
-def plot_function(history):
-    plt.plot(history.history['accuracy'])
-    plt.plot(history.history['val_accuracy'])
-    plt.title('model accuracy')
-    plt.ylabel('accuracy')
-    plt.xlabel('epoch')
+def plot_function(H):
+    plt.figure()
+    plt.plot(np.arange(0, 100), H.history['accuracy'], label="train_acc")
+    plt.plot(np.arange(0, 100), H.history['val_accuracy'], label="val_acc")
+    plt.plot(np.arange(0, 100), H.history["loss"], label="train_loss")
+    plt.plot(np.arange(0, 100), H.history["val_loss"], label="val_loss")
+    plt.title("Training Loss and Accuracy")
+    plt.xlabel("Epoch #")
+    plt.ylabel("Loss/Accuracy")
     plt.legend(['train', 'validation'], loc='upper left')
     plt.show()
-    # 'loss'
-    # 'accuracy'
+
     return 0
 
 
 if __name__ == '__main__':
     init_gpu()
-    training_data = create_training_data()
+    training_data = create_training_data(DATADIR='/home/expoli/Downloads/Datasets')
     shuffled_data = shuffle_data(training_data)
     X, Y = create_dataset(shuffled_data)
     model = create_model(X, Y)
-    # model = load_model_file('my_model.h5')
-    history = fit_and_save_model(X, Y, model=model, epochs=1000)
+    history = fit_and_save_model(X, Y, model=model, epochs=100,
+                                 model_save_path='result/model/my_new_model_new_datasets.h5')
 
-    plot_function(history=history)
+    plot_function(H=history)
