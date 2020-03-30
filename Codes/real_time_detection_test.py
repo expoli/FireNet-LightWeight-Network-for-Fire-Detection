@@ -43,7 +43,7 @@ def create_video_files_path(CATEGORIES=['NoFire', 'Other NoFire images'],
     return video_files_path
 
 
-def file_detection(video_path, IMG_SIZE=64, saved_model_path='my_model.h5', window_name="Output"):
+def file_detection(video_path, IMG_SIZE=64, saved_model_path='', window_name="Output"):
     model = load_saved_model(saved_model_path)
     for path in video_path:
         cap = cv2.VideoCapture(path)
@@ -98,6 +98,7 @@ if __name__ == '__main__':
     if init_gpu():
         video_files_path = create_video_files_path()
         # model = load_saved_model()
-        file_detection(video_files_path, IMG_SIZE=64, window_name="Result")
+        file_detection(video_files_path, saved_model_path='result/hdf5_files/weights.102-0.43.hdf5', IMG_SIZE=64,
+                       window_name="Result")
     else:
         print('Error!')
