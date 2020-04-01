@@ -216,14 +216,14 @@ if __name__ == '__main__':
     X, Y = create_dataset(shuffled_data)
     model = create_model(X, Y)
 
-    directory = 'result/train05/'
+    directory = 'result/train06/'
     create_dir(directory)
-    checkpoint_path = directory + 'hdf5_files'
+    checkpoint_path = directory + 'hdf5_files/'
     create_dir(checkpoint_path)
 
     history = fit_and_save_model(X, Y, model=model, epochs=100,
                                  model_save_path=directory + 'my_new_model_new_datasets.h5',
-                                 checkpoint_path=checkpoint_path,
+                                 checkpoint_path=checkpoint_path + 'weights.{epoch:02d}-{val_loss:.2f}.hdf5',
                                  tonser_board_log_dir=directory + 'tensorboard_logs')
 
     plot_function(H=history, figure_save_path=directory + 'train.png')
