@@ -120,8 +120,9 @@ def create_model(X, Y):
 
 
 def fit_and_save_model(X, Y, model, epochs=100,
-                       checkpoint_path="./result/hdf5_files/weights.{epoch:02d}-{val_loss:.2f}.hdf5",
-                       model_save_path=''):
+                       checkpoint_path="./result/hdf5_files_01/weights.{epoch:02d}-{val_loss:.2f}.hdf5",
+                       model_save_path='',
+                       tonser_board_log_dir=''):
     # 创建一个基本的模型实例
 
     # 显示模型的结构
@@ -138,11 +139,11 @@ def fit_and_save_model(X, Y, model, epochs=100,
     #                                  baseline=None,
     #                                  restore_best_weights=True)
 
-    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir='./result/tensorboard_logs',
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=tonser_board_log_dir,
                                                           histogram_freq=0,
                                                           batch_size=32,
                                                           write_graph=True,
-                                                          write_grads=False,
+                                                          write_grads=True,
                                                           write_images=False,
                                                           embeddings_freq=0,
                                                           embeddings_layer_names=None,
@@ -182,7 +183,7 @@ def load_model_file(h5_model_file_dir='my_model.h5'):
     return model
 
 
-def plot_function(H):
+def plot_function(H, figure_save_path='train.png'):
     plt.figure()
     plt.plot(np.arange(0, 100), H.history['accuracy'], label="train_acc")
     plt.plot(np.arange(0, 100), H.history['val_accuracy'], label="val_acc")
@@ -191,11 +192,22 @@ def plot_function(H):
     plt.title("Training Loss and Accuracy")
     plt.xlabel("Epoch #")
     plt.ylabel("Loss/Accuracy")
-    plt.legend(['train', 'validation'], loc='upper left')
+    plt.legend()
     plt.show()
+    plt.savefig(figure_save_path)
+    plt.close(figure_save_path)
 
     return 0
 
+
+def create_dir(dir_name):
+    try:
+        os.makedirs(dir_name)
+    except FileExistsError:
+        # directory already exists
+        pass
+
+    return 0
 
 if __name__ == '__main__':
     init_gpu()
@@ -203,7 +215,15 @@ if __name__ == '__main__':
     shuffled_data = shuffle_data(training_data)
     X, Y = create_dataset(shuffled_data)
     model = create_model(X, Y)
-    history = fit_and_save_model(X, Y, model=model, epochs=100,
-                                 model_save_path='result/model/my_new_model_new_datasets.h5')
 
-    plot_function(H=history)
+    directory = 'result/train05/'
+    create_dir(directory)
+    checkpoint_path = directory + 'hdf5_files'
+    create_dir(checkpoint_path)
+
+    history = fit_and_save_model(X, Y, model=model, epochs=100,
+                                 model_save_path=directory + 'my_new_model_new_datasets.h5',
+                                 checkpoint_path=checkpoint_path,
+                                 tonser_board_log_dir=directory + 'tensorboard_logs')
+
+    plot_function(H=history, figure_save_path=directory + 'train.png')

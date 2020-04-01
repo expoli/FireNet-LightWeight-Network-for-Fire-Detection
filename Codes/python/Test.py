@@ -97,10 +97,52 @@ def predicte_labels(X, model, test_image_num):
     return predicted_labels
 
 
+def begain_compute(actual_labels, predicted_labels):
+    cm = confusion_matrix(actual_labels, predicted_labels)
+    # test_batches.class_indices
+    cm_plot_labels = ['Fire', 'No Fire']
+
+    # 真正
+    tp = cm[0][0]
+    # 假负
+    fn = cm[0][1]
+    # 假正
+    fp = cm[1][0]
+    # 真负
+    tn = cm[1][1]
+
+    print("tp" + ' ' + str(tp))
+    print("fn" + ' ' + str(fn))
+    print("fp" + ' ' + str(fp))
+    print("tn" + ' ' + str(tn))
+    # 召回率
+    Recall = tp / (tp + fn)
+    # 准确率
+    Precision = tp / (tp + fp)
+    f_measure = 2 * ((Precision * Recall) / (Precision + Recall))
+
+    print('Precision=', Precision, 'Recall=', Recall, 'f_measure=', f_measure)
+
+    return cm, cm_plot_labels
+
+
+def dispaly_model_summary(model):
+    # 显示模型的结构
+    model.summary()
+    return 0
+
+
+def evaluate_model(X, Y, model):
+    result = model.evaluate(X, Y)
+
+    return result
+
+
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
-                          cmap='Blues'):
+                          cmap='Blues',
+                          figure_save_path='test.png'):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
@@ -131,49 +173,20 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel('Predicted label')
     plt.tight_layout()
     plt.show()
+    plt.savefig(figure_save_path)
+    plt.close(figure_save_path)
 
     return 0
 
 
-def begain_compute(actual_labels, predicted_labels):
-    cm = confusion_matrix(actual_labels, predicted_labels)
-    # test_batches.class_indices
-    cm_plot_labels = ['Fire', 'No Fire']
-    plot_confusion_matrix(cm, cm_plot_labels, title='Confusion Matrix')
+def create_dir(dir_name):
+    try:
+        os.makedirs(dir_name)
+    except FileExistsError:
+        # directory already exists
+        pass
 
-    # 真正
-    tp = cm[0][0]
-    # 假负
-    fn = cm[0][1]
-    # 假正
-    fp = cm[1][0]
-    # 真负
-    tn = cm[1][1]
-
-    print("tp" + ' ' + str(tp))
-    print("fn" + ' ' + str(fn))
-    print("fp" + ' ' + str(fp))
-    print("tn" + ' ' + str(tn))
-    # 召回率
-    Recall = tp / (tp + fn)
-    # 准确率
-    Precision = tp / (tp + fp)
-    f_measure = 2 * ((Precision * Recall) / (Precision + Recall))
-
-    print('Precision=', Precision, 'Recall=', Recall, 'f_measure=', f_measure)
-
-    return cm
-
-def dispaly_model_summary(model):
-    # 显示模型的结构
-    model.summary()
     return 0
-
-def evaluate_model(X, Y, model):
-    result = model.evaluate(X, Y)
-
-    return result
-
 
 if __name__ == '__main__':
     init_gpu()
@@ -182,8 +195,9 @@ if __name__ == '__main__':
     test_image_num = len(shuffled_test_image_data)
     actual_labels = create_test_labels(shuffled_test_image_data, test_image_num=test_image_num)
     X, Y = create_dataset(test_image_data=shuffled_test_image_data, IMG_SIZE=64)
-    model = load_tf_h5_model(model_path='my_model.h5')
+    model = load_tf_h5_model(model_path='result/train05/my_new_model_new_datasets.h5')
     dispaly_model_summary(model)
     predicted_labels = predicte_labels(X=X, model=model, test_image_num=test_image_num)
-    begain_compute(actual_labels=actual_labels, predicted_labels=predicted_labels)
+    cm, cm_plot_labels = begain_compute(actual_labels=actual_labels, predicted_labels=predicted_labels)
+    plot_confusion_matrix(cm, cm_plot_labels, title='Confusion Matrix', figure_save_path='result/train05')
     print(evaluate_model(X, Y, model))

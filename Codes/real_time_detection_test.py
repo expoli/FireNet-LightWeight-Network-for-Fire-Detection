@@ -30,7 +30,7 @@ def load_saved_model(model_path='my_model.h5'):
     return model
 
 
-def create_video_files_path(CATEGORIES=['NoFire', 'Other NoFire images'],
+def create_video_files_path(CATEGORIES=['fire', 'NoFire'],
                             DATADIR='Datasets/Our_Complete_Dataset_Video_and_extra_NoFire_Frames'):
     video_files_path = []
     for category in CATEGORIES:
@@ -72,11 +72,12 @@ def file_detection(video_path, IMG_SIZE=64, saved_model_path='', window_name="Ou
 
                     label = "Fire Probability: " + str(fire_prob)
                     fps_label = "FPS: " + str(1 / np.float64(toc - tic))
+                    cv2.putText(orig, path, (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                     cv2.putText(orig, label, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                     cv2.putText(orig, fps_label, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
-                    cv2.namedWindow(window_name)
-                    cv2.resizeWindow(winname=window_name, width=640, height=480)
+                    cv2.namedWindow(window_name, 0)
+                    cv2.resizeWindow(winname=window_name, width=1080, height=720)
                     cv2.imshow(winname=window_name, mat=orig)
 
                     key = cv2.waitKey(10)
@@ -98,7 +99,7 @@ if __name__ == '__main__':
     if init_gpu():
         video_files_path = create_video_files_path()
         # model = load_saved_model()
-        file_detection(video_files_path, saved_model_path='result/hdf5_files/weights.102-0.43.hdf5', IMG_SIZE=64,
+        file_detection(video_files_path, saved_model_path='result/train05/my_new_model_new_datasets.h5', IMG_SIZE=64,
                        window_name="Result")
     else:
         print('Error!')
