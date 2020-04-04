@@ -195,7 +195,7 @@ if __name__ == '__main__':
     test_image_num = len(shuffled_test_image_data)
     actual_labels = create_test_labels(shuffled_test_image_data, test_image_num=test_image_num)
     X, Y = create_dataset(test_image_data=shuffled_test_image_data, IMG_SIZE=64)
-    model = load_tf_h5_model(model_path='result/train05/my_new_model_new_datasets.h5')
+    model = load_tf_h5_model(model_path='result/train07/hdf5_files/weights.96-0.31.hdf5')
     dispaly_model_summary(model)
     predicted_labels = predicte_labels(X=X, model=model, test_image_num=test_image_num)
     cm, cm_plot_labels = begain_compute(actual_labels=actual_labels, predicted_labels=predicted_labels)

@@ -6,8 +6,10 @@ import random
 import cv2
 import numpy as np
 import tensorflow as tf
+from keras import backend as K
 from matplotlib import pyplot as plt
-from tensorflow.keras.layers import Conv2D, AveragePooling2D
+from tensorflow.keras.layers import Activation, BatchNormalization, MaxPooling2D
+from tensorflow.keras.layers import Conv2D
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 from tqdm import tqdm
 
@@ -90,27 +92,39 @@ def create_dataset(training_data, IMG_SIZE=64):
 
 def create_model(X, Y):
     model = tf.keras.models.Sequential()
+    inputShape = X.shape[1:]
 
-    model.add(Conv2D(filters=16, kernel_size=(3, 3), activation='relu', input_shape=X.shape[1:]))
-    model.add(AveragePooling2D())
-    model.add(Dropout(0.5))
+    chanDim = -1
 
-    model.add(Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
-    model.add(AveragePooling2D())
-    model.add(Dropout(0.5))
+    if K.image_data_format() == "channels_first":
+        chanDim = 1
 
-    model.add(Conv2D(filters=64, kernel_size=(3, 3), activation='relu'))
-    model.add(AveragePooling2D())
-    model.add(Dropout(0.5))
+    model.add(Conv2D(32, (3, 3), padding='same', input_shape=inputShape, name='block1_conv1'))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization(axis=chanDim))
+    model.add(Conv2D(32, (3, 3), padding='same', input_shape=inputShape, name='block1_conv2'))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization(axis=chanDim))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='block1_pool'))
+    model.add(Dropout(0.25))
+
+    model.add(Conv2D(64, (3, 3), padding='same', input_shape=inputShape, name='block2_conv1'))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization(axis=chanDim))
+    model.add(Conv2D(64, (3, 3), padding='same', input_shape=inputShape, name='block2_conv2'))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization(axis=chanDim))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='block2_pool'))
+    model.add(Dropout(0.25))
 
     model.add(Flatten())
+    model.add(Dense(512))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.5))
 
-    model.add(Dense(units=256, activation='relu'))
-    model.add(Dropout(0.2))
-
-    model.add(Dense(units=128, activation='relu'))
-
-    model.add(Dense(units=2, activation='softmax'))
+    model.add(Dense(2))
+    model.add(Activation("softmax"))
 
     model.compile(loss='sparse_categorical_crossentropy',
                   optimizer='adam',
@@ -183,12 +197,12 @@ def load_model_file(h5_model_file_dir='my_model.h5'):
     return model
 
 
-def plot_function(H, figure_save_path='train.png'):
+def plot_function(H, figure_save_path='train.png', epochs=100):
     plt.figure()
-    plt.plot(np.arange(0, 100), H.history['accuracy'], label="train_acc")
-    plt.plot(np.arange(0, 100), H.history['val_accuracy'], label="val_acc")
-    plt.plot(np.arange(0, 100), H.history["loss"], label="train_loss")
-    plt.plot(np.arange(0, 100), H.history["val_loss"], label="val_loss")
+    plt.plot(np.arange(0, epochs), H.history['accuracy'], label="train_acc")
+    plt.plot(np.arange(0, epochs), H.history['val_accuracy'], label="val_acc")
+    plt.plot(np.arange(0, epochs), H.history["loss"], label="train_loss")
+    plt.plot(np.arange(0, epochs), H.history["val_loss"], label="val_loss")
     plt.title("Training Loss and Accuracy")
     plt.xlabel("Epoch #")
     plt.ylabel("Loss/Accuracy")
@@ -216,14 +230,16 @@ if __name__ == '__main__':
     X, Y = create_dataset(shuffled_data)
     model = create_model(X, Y)
 
-    directory = 'result/train06/'
+    directory = 'result/train09/'
     create_dir(directory)
     checkpoint_path = directory + 'hdf5_files/'
     create_dir(checkpoint_path)
 
-    history = fit_and_save_model(X, Y, model=model, epochs=100,
+    epochs = 300
+
+    history = fit_and_save_model(X, Y, model=model, epochs=epochs,
                                  model_save_path=directory + 'my_new_model_new_datasets.h5',
                                  checkpoint_path=checkpoint_path + 'weights.{epoch:02d}-{val_loss:.2f}.hdf5',
                                  tonser_board_log_dir=directory + 'tensorboard_logs')
 
-    plot_function(H=history, figure_save_path=directory + 'train.png')
+    plot_function(H=history, figure_save_path=directory + 'train.png', epochs=epochs)
