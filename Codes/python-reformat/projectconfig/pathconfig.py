@@ -1,6 +1,6 @@
 import os
 
-RESULT_ROOT_PATH = 'results03/'
+RESULT_ROOT_PATH = 'results/results05/'
 TRAINING_TIME = 'train'
 MODEL_SAVE_PATH = 'models/'
 TENSORBOARD_LOG_PATH = 'tensorboard_log/'

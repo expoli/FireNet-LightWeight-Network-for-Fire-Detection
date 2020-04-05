@@ -70,9 +70,10 @@ cb_tensorboard = TF_CB_tensorboard.TensorboardCallBack()
 cb_mdoel_saver = TF_CB_mdoel_saver.modelsaver()
 cb_chcekpoint = TF_CB_chcekpoint.ModelCheckpointCallBack()
 
+epochs=600
 H = model.fit(aug.flow(trainX, trainY, batch_size=32),
               validation_data=(testX, testY), steps_per_epoch=len(trainX) // 32,
-              epochs=100, verbose=1,
+              epochs=epochs, verbose=1,
               callbacks=[cb_tensorboard.build_cb(), cb_chcekpoint.build_cb()])
 model.save(filepath=pathconfig.get_model_save_path())
 # evaluate the network
@@ -84,10 +85,10 @@ print(classification_report(testY.argmax(axis=1),
 # plot the training loss and accuracy
 plt.style.use("ggplot")
 plt.figure()
-plt.plot(np.arange(0, 100), H.history["loss"], label="train_loss")
-plt.plot(np.arange(0, 100), H.history["val_loss"], label="val_loss")
-plt.plot(np.arange(0, 100), H.history["accuracy"], label="train_acc")
-plt.plot(np.arange(0, 100), H.history["val_accuracy"], label="val_acc")
+plt.plot(np.arange(0, epochs), H.history["loss"], label="train_loss")
+plt.plot(np.arange(0, epochs), H.history["val_loss"], label="val_loss")
+plt.plot(np.arange(0, epochs), H.history["accuracy"], label="train_acc")
+plt.plot(np.arange(0, epochs), H.history["val_accuracy"], label="val_acc")
 plt.title("Training Loss and Accuracy")
 plt.xlabel("Epoch #")
 plt.ylabel("Loss/Accuracy")
