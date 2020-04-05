@@ -11,15 +11,15 @@ class BinaryNet:
 
         model.add(Conv2D(filters=16, kernel_size=(3, 3), activation='relu', input_shape=inputShape))
         model.add(AveragePooling2D())
-        model.add(Dropout(0.5))
+        # model.add(Dropout(0.5))
 
         model.add(Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
         model.add(AveragePooling2D())
-        model.add(Dropout(0.5))
+        # model.add(Dropout(0.5))
 
         model.add(Conv2D(filters=64, kernel_size=(3, 3), activation='relu'))
         model.add(AveragePooling2D())
-        model.add(Dropout(0.5))
+        # model.add(Dropout(0.5))
 
         model.add(Flatten())
 

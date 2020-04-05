@@ -14,7 +14,7 @@ class TensorboardCallBack:
                  embeddings_metadata=None,
                  embeddings_data=None,
                  update_freq='epoch'):
-        self.tensorboard_log_path = pathconfig.get_tensorblard_path()
+        self.tensorboard_log_path = pathconfig.pathconfig().get_tensorblard_path()
         self.histogram_freq = histogram_freq
         self.batch_size = batch_size
         self.write_graph = write_graph
@@ -27,7 +27,6 @@ class TensorboardCallBack:
         self.update_freq = update_freq
 
     def build_cb(self):
-        pathconfig.check_dir(self.tensorboard_log_path)
         tonserboard_callback = tf.keras.callbacks.TensorBoard(log_dir=self.tensorboard_log_path,
                                                               histogram_freq=self.histogram_freq,
                                                               batch_size=self.batch_size,
