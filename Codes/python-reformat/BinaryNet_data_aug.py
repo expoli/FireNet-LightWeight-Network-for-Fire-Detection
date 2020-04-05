@@ -4,7 +4,6 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from imutils import paths
-import tensorflow as tf
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelBinarizer
@@ -12,6 +11,7 @@ from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from pyimagesearch.datasets import SimpleDatasetLoader as SDL
+from pyimagesearch.gpu import InitGpu
 from pyimagesearch.nn.conv import BinaryNet as BinNet
 from pyimagesearch.preprocessing import AspectAwarePreprocessor as AAP
 from pyimagesearch.preprocessing import ImageMove as IM
@@ -20,6 +20,10 @@ from pyimagesearch.preprocessing import ImageToArrayPreprocessor as IAP
 ap = argparse.ArgumentParser()
 ap.add_argument('-d', '--dataset', required=True, help='path to input dataset')
 args = vars(ap.parse_args())
+
+print('[INFO] initing gpu.....')
+gpu = InitGpu.InitGpu()
+gpu.init()
 
 print('[INFO] moving image to label folder.....')
 im = IM.MoveImageToLabel(dataPath=args['dataset'])
@@ -33,23 +37,6 @@ classNames = [str(x) for x in np.unique(classNames)]
 
 aap = AAP.AspectAwarePreprocesser(64, 64)
 iap = IAP.ImageToArrayPreprocess()
-
-def init_gpu():
-    gpus = tf.config.experimental.list_physical_devices('GPU')
-    if gpus:
-        try:
-            # Currently, memory growth needs to be the same across GPUs
-            for gpu in gpus:
-                tf.config.experimental.set_memory_growth(gpu, True)
-            logical_gpus = tf.config.experimental.list_logical_devices('GPU')
-            print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
-        except RuntimeError as e:
-            # Memory growth must be set before GPUs have been initialized
-            print(e)
-
-    return 0
-
-init_gpu()
 
 sdl = SDL.SimpleDatasetLoader(preprocessors=[aap, iap])
 (data, labels) = sdl.load(imagePaths, verbose=500)
@@ -75,8 +62,8 @@ model.compile(loss="sparse_categorical_crossentropy",
 
 print("[INFO] training network...")
 H = model.fit(aug.flow(trainX, trainY, batch_size=32),
-                        validation_data=(testX, testY), steps_per_epoch=len(trainX) // 32,
-                        epochs=100, verbose=1)
+              validation_data=(testX, testY), steps_per_epoch=len(trainX) // 32,
+              epochs=100, verbose=1)
 
 # evaluate the network
 print("[INFO] evaluating network...")
