@@ -11,7 +11,7 @@ from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from pyimagesearch.datasets import SimpleDatasetLoader as SDL
-from pyimagesearch.gpu import InitGpu
+from tfsettings.gpu import InitGpu
 from pyimagesearch.nn.conv import BinaryNet as BinNet
 from pyimagesearch.preprocessing import AspectAwarePreprocessor as AAP
 from pyimagesearch.preprocessing import ImageMove as IM
