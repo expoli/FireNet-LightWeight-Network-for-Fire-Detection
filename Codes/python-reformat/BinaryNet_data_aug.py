@@ -7,6 +7,7 @@ from imutils import paths
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelBinarizer
+from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from projectconfig import pathconfig
@@ -56,8 +57,8 @@ aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,
 
 # initialize the optimizer and model
 print("[INFO] compiling model...")
-# opt = SGD(lr=0.05)
-opt = 'adam'
+opt = SGD(lr=0.05)
+# opt = 'adam'
 model = BinNet.BinaryNet.build(width=64, height=64, depth=3)
 model.compile(loss="sparse_categorical_crossentropy",
               optimizer=opt,
@@ -67,7 +68,7 @@ print("[INFO] training network...")
 
 epochs = 600
 config_path = pathconfig.pathconfig()
-config_path.set_root_path('results00/results07/')
+config_path.set_root_path('results/results08/')
 # 构建回调函数
 cb_tensorboard = TF_CB_tensorboard.TensorboardCallBack()
 cb_mdoel_saver = TF_CB_mdoel_saver.modelsaver()
