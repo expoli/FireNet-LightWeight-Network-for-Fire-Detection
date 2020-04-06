@@ -19,7 +19,7 @@ class BinaryNet:
 
         model.add(Conv2D(filters=64, kernel_size=(3, 3), activation='relu'))
         model.add(AveragePooling2D())
-        # model.add(Dropout(0.5))
+        model.add(Dropout(0.5))
 
         model.add(Flatten())
 
@@ -29,9 +29,5 @@ class BinaryNet:
         model.add(Dense(units=128, activation='relu'))
 
         model.add(Dense(units=2, activation='softmax'))
-
-        model.compile(loss='sparse_categorical_crossentropy',
-                      optimizer='adam',
-                      metrics=['accuracy'])
 
         return model
