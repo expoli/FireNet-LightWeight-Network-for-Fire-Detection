@@ -67,7 +67,7 @@ model.compile(loss="sparse_categorical_crossentropy",
 
 print("[INFO] training network...")
 
-epochs = args['epochs']
+epochs = int(args['epochs'])
 config_path = pathconfig.pathconfig()
 config_path.set_root_path('results/results08/')
 # 构建回调函数
