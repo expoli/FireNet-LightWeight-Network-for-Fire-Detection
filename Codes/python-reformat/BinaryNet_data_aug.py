@@ -22,6 +22,7 @@ from tfsettings.traincallbacks import tensorboard as TF_CB_tensorboard
 
 ap = argparse.ArgumentParser()
 ap.add_argument('-d', '--dataset', required=True, help='path to input dataset')
+ap.add_argument('-e', '--epochs', required=True, help='training epochs number')
 args = vars(ap.parse_args())
 
 print('[INFO] initing gpu.....')
@@ -66,7 +67,7 @@ model.compile(loss="sparse_categorical_crossentropy",
 
 print("[INFO] training network...")
 
-epochs = 600
+epochs = args['epochs']
 config_path = pathconfig.pathconfig()
 config_path.set_root_path('results/results08/')
 # 构建回调函数
