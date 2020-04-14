@@ -9,13 +9,12 @@ from Preprocessor import ModelLoader
 
 
 class FireDetectioner:
-    def __init__(self, IMG_SIZE=64, sleep_time=1, modelPath='', video_path='', text_out=0, gui_out=1,
+    def __init__(self, IMG_SIZE=64, sleep_time=1, modelPath='', video_path='', gui_flag=0,
                  window_name='Result'):
         self.IMG_SIZE = IMG_SIZE
         self.sleep_time = sleep_time
         self.video_path = CreateFilesPath.CreateFilesPath(video_path).create_path_list()
-        self.text_out = text_out
-        self.gui_out = gui_out
+        self.gui_flag = gui_flag
         self.window_name = window_name
         self.model = ModelLoader.LoadModel(modelPath).load_saved_model()
 
@@ -62,11 +61,10 @@ class FireDetectioner:
                         fire_prob = predictions[0][0] * 100
                         toc = time.time()
 
-                        if self.text_out:
-                            self.textOuter(tic, toc, fire_prob, predictions)
-
-                        if self.gui_out:
+                        if self.gui_flag == 1:
                             self.guiOutputer(orig, path, tic, toc, fire_prob, self.window_name)
+                        else:
+                            self.textOuter(tic, toc, fire_prob, predictions)
 
                         key = cv2.waitKey(10)
                         if key == 27:  # exit on ESC
