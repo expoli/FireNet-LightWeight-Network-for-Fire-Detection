@@ -1,20 +1,18 @@
 import argparse
-import os
-
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 from imutils import paths
-from sklearn.metrics import classification_report
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelBinarizer
-from tensorflow.keras.optimizers import SGD
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
 from projectconfig import pathconfig
 from pyimagesearch.datasets import SimpleDatasetLoader as SDL
 from pyimagesearch.nn.conv import BinaryNet as BinNet
 from pyimagesearch.preprocessing import AspectAwarePreprocessor as AAP
 from pyimagesearch.preprocessing import ImageToArrayPreprocessor as IAP
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelBinarizer
+from tensorflow.keras.optimizers import SGD
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tfsettings.gpu import InitGpu
 from tfsettings.traincallbacks import modelcheckpoint as TF_CB_chcekpoint
 from tfsettings.traincallbacks import modelsaver as TF_CB_mdoel_saver
@@ -58,8 +56,8 @@ aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,
 
 # initialize the optimizer and model
 print("[INFO] compiling model...")
-opt = SGD(lr=0.05)
-# opt = 'adam'
+# opt = SGD(lr=0.05)
+opt = 'adam'
 model = BinNet.BinaryNet.build(width=64, height=64, depth=3)
 model.compile(loss="sparse_categorical_crossentropy",
               optimizer=opt,
