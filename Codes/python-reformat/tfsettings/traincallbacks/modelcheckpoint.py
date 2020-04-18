@@ -4,7 +4,7 @@ from projectconfig import pathconfig
 
 
 class ModelCheckpointCallBack:
-    def __init__(self, period=1, monitor='val_los', verbose=0, save_best_only=False,
+    def __init__(self, period=1, monitor='val_loss', verbose=0, save_best_only=False,
                  save_weights_only=False, mode='auto'):
         self.checkpoint_path = pathconfig.pathconfig().get_checkpoint_path()
         self.period = period
