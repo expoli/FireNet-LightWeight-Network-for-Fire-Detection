@@ -61,7 +61,7 @@ class FireDetectioner:
                         fire_prob = predictions[0][0] * 100
                         toc = time.time()
 
-                        if self.gui_flag == 1:
+                        if self.gui_flag == '1':
                             self.guiOutputer(orig, path, tic, toc, fire_prob, self.window_name)
                         else:
                             self.textOuter(tic, toc, fire_prob, predictions)
