@@ -90,8 +90,9 @@ def create_dataset(training_data, IMG_SIZE=64):
 
 def create_model(X, Y):
     model = tf.keras.models.Sequential()
+    input_shape=X.shape[1:]
 
-    model.add(Conv2D(filters=16, kernel_size=(3, 3), activation='relu', input_shape=X.shape[1:]))
+    model.add(Conv2D(filters=16, kernel_size=(3, 3), activation='relu', input_shape=input_shape))
     model.add(AveragePooling2D())
     model.add(Dropout(0.5))
 
@@ -216,7 +217,7 @@ if __name__ == '__main__':
     X, Y = create_dataset(shuffled_data)
     model = create_model(X, Y)
 
-    directory = 'result/train06/'
+    directory = 'result02/train00/'
     create_dir(directory)
     checkpoint_path = directory + 'hdf5_files/'
     create_dir(checkpoint_path)

@@ -3,7 +3,7 @@ import os
 
 class pathconfig:
     def __init__(self):
-        self.RESULT_ROOT_PATH = 'results00/results07/'
+        self.RESULT_ROOT_PATH = 'result2/results06/'
         self.TRAINING_TIME = 'train'
         self.MODEL_SAVE_PATH = 'models/'
         self.TENSORBOARD_LOG_PATH = 'tensorboard_log/'

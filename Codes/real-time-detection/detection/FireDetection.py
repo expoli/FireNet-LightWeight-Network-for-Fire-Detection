@@ -9,7 +9,7 @@ from Preprocessor import ModelLoader
 
 
 class FireDetectioner:
-    def __init__(self, IMG_SIZE=64, sleep_time=1, modelPath='', video_path='', gui_flag=0,
+    def __init__(self, IMG_SIZE=64, sleep_time=1, modelPath='', video_path='', gui_flag='',
                  window_name='Result'):
         self.IMG_SIZE = IMG_SIZE
         self.sleep_time = sleep_time
