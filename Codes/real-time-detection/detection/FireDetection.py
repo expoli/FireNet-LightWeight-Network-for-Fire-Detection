@@ -6,6 +6,7 @@ import tensorflow as tf
 
 from Preprocessor import CreateFilesPath
 from Preprocessor import ModelLoader
+from utils.alarm import mail as alarm_mail
 
 
 class FireDetectioner:
@@ -17,6 +18,8 @@ class FireDetectioner:
         self.gui_flag = gui_flag
         self.window_name = window_name
         self.model = ModelLoader.LoadModel(modelPath).load_saved_model()
+        self.fire_list = []
+        self.epoch = 0
 
     def textOuter(self, tic, toc, fire_prob, predictions):
         print("Time taken = ", toc - tic)
@@ -35,6 +38,11 @@ class FireDetectioner:
         cv2.namedWindow(window_name, 0)
         cv2.resizeWindow(winname=window_name, width=1080, height=720)
         cv2.imshow(winname=window_name, mat=orig)
+        return 0
+
+    def mailAlarm(self, mail_text, mail_to):
+        alarm_mail.mail(mail_text, mail_to)
+        print("报警成功！")
         return 0
 
     def detection(self):
@@ -60,6 +68,14 @@ class FireDetectioner:
                         predictions = model.predict(image)
                         fire_prob = predictions[0][0] * 100
                         toc = time.time()
+
+                        if self.epoch <= 100:
+                            self.fire_list.append(fire_prob)
+                            self.epoch += 1
+                        elif np.mean(self.fire_list) >= 50:
+                            print(np.mean(self.fire_list))
+                            print("Fire! Alarm!!!")
+                            self.epoch = 0
 
                         if self.gui_flag == '1':
                             self.guiOutputer(orig, path, tic, toc, fire_prob, self.window_name)
