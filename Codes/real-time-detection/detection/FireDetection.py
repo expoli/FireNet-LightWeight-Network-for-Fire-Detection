@@ -1,3 +1,4 @@
+import threading
 import time
 
 import cv2
@@ -6,13 +7,12 @@ import tensorflow as tf
 
 from Preprocessor import CreateFilesPath
 from Preprocessor import ModelLoader
-from utils.alarm import mail as alarm_mail
+from utils.alarm.mail import mail as alarm_mail
 from utils.alarm.private_info import *
 
-
 class FireDetectioner:
-    def __init__(self, IMG_SIZE=64, modelPath='', video_path='', gui_flag='',
-                 window_name='Result', DEVICE_ID="0000001", max_list_num=200):
+    def __init__(self, IMG_SIZE=64, modelPath='', video_path='', gui_flag='', window_name='Result', DEVICE_ID="0000001",
+                 max_list_num=200):
         self.DEVICE_ID = DEVICE_ID
         self.IMG_SIZE = IMG_SIZE
         self.video_path = CreateFilesPath.CreateFilesPath(video_path).create_path_list()
@@ -43,7 +43,7 @@ class FireDetectioner:
         return 0
 
     def mailAlarm(self, mail_text, mail_to):
-        alarm_mail.mail(mail_text, mail_to)
+        alarm_mail(mail_text, mail_to)
         print("报警成功！")
         return 0
 
@@ -59,7 +59,7 @@ class FireDetectioner:
                     if (rval):
                         orig = image.copy()
 
-                        # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                        # 数据预处理
                         image = cv2.resize(image, (self.IMG_SIZE, self.IMG_SIZE))
                         image = image.astype("float") / 255.0
                         image = tf.keras.preprocessing.image.img_to_array(image)
@@ -76,9 +76,13 @@ class FireDetectioner:
                         elif np.mean(self.fire_list) >= 50:
                             print(np.mean(self.fire_list))
                             print("Fire! Alarm!!!")
-                            self.mailAlarm("Fire! Alarm!!!\n" +
+                            try:
+                                mail_thread = threading.Thread(target=self.mailAlarm,args=("Fire! Alarm!!!\n" +
                                            "Device ID:" + self.DEVICE_ID +
-                                           "\nTime:" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), MAIL_TO)
+                                           "\nTime:" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), MAIL_TO))
+                                mail_thread.start()
+                            except:
+                                print("Error: 无法启动邮件线程")
                             self.epoch = 0
 
                         if self.gui_flag == '1':
