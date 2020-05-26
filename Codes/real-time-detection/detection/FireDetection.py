@@ -1,4 +1,4 @@
-import threading
+from multiprocessing import Process
 import time
 
 import cv2
@@ -64,12 +64,12 @@ class FireDetectioner:
                         image = image.astype("float") / 255.0
                         image = tf.keras.preprocessing.image.img_to_array(image)
                         image = np.expand_dims(image, axis=0)
-
+                        # 帧率计算
                         tic = time.time()
                         predictions = model.predict(image)
                         fire_prob = predictions[0][0] * 100
                         toc = time.time()
-
+                        # 火情判断
                         if self.epoch <= self.max_list_num:
                             self.fire_list.append(fire_prob)
                             self.epoch += 1
@@ -77,14 +77,14 @@ class FireDetectioner:
                             print(np.mean(self.fire_list))
                             print("Fire! Alarm!!!")
                             try:
-                                mail_thread = threading.Thread(target=self.mailAlarm,args=("Fire! Alarm!!!\n" +
+                                mail_process = Process(target=self.mailAlarm,args=("Fire! Alarm!!!\n" +
                                            "Device ID:" + self.DEVICE_ID +
                                            "\nTime:" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), MAIL_TO))
-                                mail_thread.start()
+                                mail_process.start()
                             except:
                                 print("Error: 无法启动邮件线程")
                             self.epoch = 0
-
+                        # gui 窗口，选择
                         if self.gui_flag == '1':
                             self.guiOutputer(orig, path, tic, toc, fire_prob, self.window_name)
                         else:
