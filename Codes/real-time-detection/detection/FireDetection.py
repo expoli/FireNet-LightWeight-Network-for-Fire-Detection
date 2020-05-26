@@ -7,17 +7,19 @@ import tensorflow as tf
 from Preprocessor import CreateFilesPath
 from Preprocessor import ModelLoader
 from utils.alarm import mail as alarm_mail
+from utils.alarm.private_info import *
 
 
 class FireDetectioner:
-    def __init__(self, IMG_SIZE=64, sleep_time=1, modelPath='', video_path='', gui_flag='',
-                 window_name='Result'):
+    def __init__(self, IMG_SIZE=64, modelPath='', video_path='', gui_flag='',
+                 window_name='Result', DEVICE_ID="0000001", max_list_num=200):
+        self.DEVICE_ID = DEVICE_ID
         self.IMG_SIZE = IMG_SIZE
-        self.sleep_time = sleep_time
         self.video_path = CreateFilesPath.CreateFilesPath(video_path).create_path_list()
         self.gui_flag = gui_flag
         self.window_name = window_name
         self.model = ModelLoader.LoadModel(modelPath).load_saved_model()
+        self.max_list_num = max_list_num
         self.fire_list = []
         self.epoch = 0
 
@@ -50,7 +52,6 @@ class FireDetectioner:
         window_name = self.window_name
         for path in self.video_path:
             cap = cv2.VideoCapture(path)
-            time.sleep(self.sleep_time)
             if cap.isOpened():
                 while (1):
                     # try to get the first frame
@@ -69,12 +70,15 @@ class FireDetectioner:
                         fire_prob = predictions[0][0] * 100
                         toc = time.time()
 
-                        if self.epoch <= 100:
+                        if self.epoch <= self.max_list_num:
                             self.fire_list.append(fire_prob)
                             self.epoch += 1
                         elif np.mean(self.fire_list) >= 50:
                             print(np.mean(self.fire_list))
                             print("Fire! Alarm!!!")
+                            self.mailAlarm("Fire! Alarm!!!\n" +
+                                           "Device ID:" + self.DEVICE_ID +
+                                           "\nTime:" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), MAIL_TO)
                             self.epoch = 0
 
                         if self.gui_flag == '1':
