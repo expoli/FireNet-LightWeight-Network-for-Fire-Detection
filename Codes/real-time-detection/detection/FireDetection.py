@@ -1,5 +1,5 @@
-from multiprocessing import Process
 import time
+from multiprocessing import Process
 
 import cv2
 import numpy as np
@@ -10,9 +10,10 @@ from Preprocessor import ModelLoader
 from utils.alarm.mail import mail as alarm_mail
 from utils.alarm.private_info import *
 
+
 class FireDetectioner:
     def __init__(self, IMG_SIZE=64, modelPath='', video_path='', gui_flag='', window_name='Result', DEVICE_ID="0000001",
-                 max_list_num=200):
+                 max_list_num=200, rtsp_url=''):
         self.DEVICE_ID = DEVICE_ID
         self.IMG_SIZE = IMG_SIZE
         self.video_path = CreateFilesPath.CreateFilesPath(video_path).create_path_list()
@@ -21,6 +22,7 @@ class FireDetectioner:
         self.model = ModelLoader.LoadModel(modelPath).load_saved_model()
         self.max_list_num = max_list_num
         self.fire_list = []
+        self.rtsp_url = rtsp_url
         self.epoch = 0
 
     def textOuter(self, tic, toc, fire_prob, predictions):
@@ -49,9 +51,11 @@ class FireDetectioner:
 
     def detection(self):
         model = self.model
-        window_name = self.window_name
         for path in self.video_path:
-            cap = cv2.VideoCapture(path)
+            if self.rtsp_url:
+                cap = cv2.VideoCapture(self.rtsp_url)
+            else:
+                cap = cv2.VideoCapture(path)
             if cap.isOpened():
                 while (1):
                     # try to get the first frame
