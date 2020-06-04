@@ -17,10 +17,14 @@ def main():
     model_path = args['model']
     dataset_path = args['dataset']
     categories = args['categories']
-    video_path = dataset_path + '/' + categories
     gui_flag = args['gui_flag']
     rtsp_url = args['rtsp_url']
-    firedetectioner = FireDetectioner(modelPath=model_path, video_path=video_path, gui_flag=gui_flag, rtsp_url=rtsp_url)
+    if rtsp_url:
+        firedetectioner = FireDetectioner(modelPath=model_path, gui_flag=gui_flag, rtsp_url=rtsp_url)
+    else:
+        video_path = dataset_path + '/' + categories
+        firedetectioner = FireDetectioner(modelPath=model_path, video_path=video_path, gui_flag=gui_flag)
+    
     firedetectioner.detection()
 
 
