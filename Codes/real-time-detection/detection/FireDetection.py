@@ -51,11 +51,12 @@ class FireDetectioner:
 
     def detection(self):
         if self.rtsp_url != '':
-            normalDetection()
+            self.normalDetection()
         else:
-            videoDetection()
+            self.videoDetection()
         
     def normalDetection(self):
+        model = self.model
         cap = cv2.VideoCapture(self.rtsp_url)
         if cap.isOpened():
             while (1):
@@ -91,7 +92,7 @@ class FireDetectioner:
                         self.epoch = 0
                     # gui 窗口，选择
                     if self.gui_flag == '1':
-                        self.guiOutputer(orig, path, tic, toc, fire_prob, self.window_name)
+                        self.guiOutputer(orig, '', tic, toc, fire_prob, self.window_name)
                     else:
                         self.textOuter(tic, toc, fire_prob, predictions)
 
